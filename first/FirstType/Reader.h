@@ -35,11 +35,30 @@ struct reader<0, T> {
     }
 };
 
+template <size_t CUR_I, size_t I, class T>
+struct print{
+    void operator()(std::ostream& out, T& data) {
+        print<CUR_I - 1, I, T> printer;
+        printer(out, data);
+        if (CUR_I == I) {
+            out << std::get<CUR_I>(data);
+        }
+    }
+};
+
+template <size_t I, class T>
+struct print<0, I, T> {
+    void operator()(std::ostream& out, T& data) {
+        if (I == 0) {
+            out << std::get<I>(data);
+        }
+    }
+};
+
 template <class ...U>
 class Reader {
 public:
     std::vector<std::tuple<U...>> Read(std::ifstream& inFile);
-
 };
 
 template<class... U>
@@ -55,6 +74,12 @@ std::vector<std::tuple<U...>>  Reader<U...>::Read(std::ifstream &inFile) {
 
 
     return array;
+}
+
+template<size_t I, class... U>
+void printOne(std::tuple<U...> &tuple, std::ostream &out) {
+    print<sizeof...(U) - 1, I, std::tuple<U...>> printer;
+    printer(out, tuple);
 }
 
 #endif //FIRST_READER_H

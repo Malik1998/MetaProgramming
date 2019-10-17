@@ -11,9 +11,9 @@
 #include <type_traits>
 
 template <size_t I, class T>
-struct reader{
+struct ReadTuple {
     bool readTuple(std::ifstream& inFile, T& data) {
-        reader<I - 1, T> reader;
+        ReadTuple<I - 1, T> reader;
         if (!reader.readTuple(inFile, data)) {
             return false;
         }
@@ -26,7 +26,7 @@ struct reader{
 };
 
 template <class T>
-struct reader<0, T> {
+struct ReadTuple<0, T> {
     bool readTuple(std::ifstream& inFile, T& data) {
         if (!(inFile >> std::get<0>(data))) {
             return false;
@@ -36,9 +36,9 @@ struct reader<0, T> {
 };
 
 template <size_t CUR_I, size_t I, class T>
-struct print{
+struct Print{
     void operator()(std::ostream& out, T& data) {
-        print<CUR_I - 1, I, T> printer;
+        Print<CUR_I - 1, I, T> printer;
         printer(out, data);
         if (CUR_I == I) {
             out << std::get<CUR_I>(data);
@@ -47,7 +47,7 @@ struct print{
 };
 
 template <size_t I, class T>
-struct print<0, I, T> {
+struct Print<0, I, T> {
     void operator()(std::ostream& out, T& data) {
         if (I == 0) {
             out << std::get<I>(data);
@@ -67,7 +67,7 @@ std::vector<std::tuple<U...>>  Reader<U...>::Read(std::ifstream &inFile) {
 
     std::tuple<U...> temp;
 
-    reader<sizeof ...(U) - 1, std::tuple<U...>> reader;
+    ReadTuple<sizeof ...(U) - 1, std::tuple<U...>> reader;
     while (reader.readTuple(inFile, temp)) {
         array.push_back(temp);
     }
@@ -78,7 +78,7 @@ std::vector<std::tuple<U...>>  Reader<U...>::Read(std::ifstream &inFile) {
 
 template<size_t I, class... U>
 void printOne(std::tuple<U...> &tuple, std::ostream &out) {
-    print<sizeof...(U) - 1, I, std::tuple<U...>> printer;
+    Print<sizeof...(U) - 1, I, std::tuple<U...>> printer;
     printer(out, tuple);
 }
 

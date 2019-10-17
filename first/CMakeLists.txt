@@ -3,4 +3,4 @@ project(first)
 
 set(CMAKE_CXX_STANDARD 14)
 
-add_executable(first main.cpp FirstType/Reader.cpp FirstType/Reader.h)
+add_executable(first main.cpp Reader.h)

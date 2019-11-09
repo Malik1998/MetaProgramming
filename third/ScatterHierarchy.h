@@ -15,6 +15,16 @@ struct Tuple {
     typedef U tail;
 };
 
+template <class T, class U, int I>
+struct GetTypeAt {
+    typedef typename GetTypeAt<typename U::head, typename U::tail, I - 1>::result result;
+};
+
+template <class T, class U>
+struct GetTypeAt<T, U, 0> {
+    typedef T result;
+};
+
 template <class List, template <class> class Class>
 class ScatterHierarchy;
 
@@ -56,6 +66,30 @@ struct GetValue {
     template <class List>
     ReturnValue& operator()(List& list) {
         return GetValueSecond<ReturnValue, typename List::next, typename List::inner, Class>()(list);
+    }
+};
+
+template <class ReturnValue, class List, class CurType, template <class> class Class, int Index>
+struct GetValueSecondIndex {
+    ReturnValue& operator()(List& element) {
+        return GetValueSecondIndex<ReturnValue, typename List::next, typename List::inner, Class, Index - 1>()(element);
+    }
+};
+
+template <class ReturnValue, class List, template <class> class Class>
+struct GetValueSecondIndex <ReturnValue, List, ScatterHierarchy<ReturnValue, Class>, Class, 0> {
+    ReturnValue& operator()(Class<ReturnValue>& element) {
+        return element.val;
+    }
+};
+
+
+
+template <template <class> class Class, int Index>
+struct GetValueIndex {
+    template <class List>
+    typename GetTypeAt<typename List::list_types::head, typename List::list_types::tail, Index>::result & operator()(List& list) {
+        return GetValueSecondIndex<typename GetTypeAt<typename List::list_types::head, typename List::list_types::tail, Index>::result, typename List::next, typename List::inner, Class, Index>()(list);
     }
 };
 

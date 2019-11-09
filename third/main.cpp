@@ -47,6 +47,17 @@ int main() {
     string_getter(hierarchy) = "NEWEST VALUE EVER";
     std::cout << string_getter(hierarchy) << std::endl;
 
+    std::cout << "----------------------------------" << std::endl;
+    std::cout << "By INDEX" << std::endl;
+    GetValueIndex<Representer, 0> int_getter_0;
+    int_getter_0(hierarchy) = 8;
+    std::cout << (int_getter_0(hierarchy)) << std::endl;
+
+    GetValueIndex<Representer, 1> string_getter_1;
+    string_getter_1(hierarchy) = "NEWEST VALUE EVER By INDEX";
+    std::cout << string_getter_1(hierarchy) << std::endl;
+
+
     //std:: cout << GetValue<std::string, Representer>(hierarchy) << std::endl;
 
 //    hierarchy::inner.value = 5;
